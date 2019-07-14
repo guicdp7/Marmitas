@@ -1,8 +1,8 @@
 var http = require('http'),
-    session = require('./session'),
     config = require('./config'),
     fileHandler = require('./filehandler'),
     parse = require('url').parse,
+    App = require("./src/App"),
     types = config.types,
     staticFolder = config.staticFolder,
     apiFolder = config.apiFolder,
@@ -36,29 +36,27 @@ function onRequest(req, res) {
         extension = filename.substr(filename.lastIndexOf('.') + 1);
 
         if (extension == filename) {
-            session(req, req, function () {
-                var responseObj = {};
+            var responseObj = {};
 
-                extension = "json";
+            extension = "json";
 
-                filename = filename.charAt(0) + filename.charAt(1).toUpperCase() + filename.substr(2).toLowerCase();
-                fullPath = apiFolder + filename + ".js";
+            filename = filename.charAt(0) + filename.charAt(1).toUpperCase() + filename.substr(2).toLowerCase();
+            fullPath = apiFolder + filename + ".js";
 
-                try {
-                    var classObj = require(fullPath);
+            try {
+                var classObj = require(fullPath);
 
-                    classObj(function (resData) {
-                        responseObj[filename.substr(1).toLowerCase()] = resData;
-                        responseObj["status"] = true;
-                        success(JSON.stringify(responseObj));
-                    }, url, data, method, headers, req, res);
-                }
-                catch (e) {
-                    responseObj["error"] = e;
-                    responseObj["status"] = false;
+                classObj(function (resData) {
+                    responseObj[filename.substr(1).toLowerCase()] = resData;
+                    responseObj["status"] = true;
                     success(JSON.stringify(responseObj));
-                }
-            });
+                }, url, data, method, headers, req, res);
+            }
+            catch (e) {
+                responseObj["error"] = e;
+                responseObj["status"] = false;
+                success(JSON.stringify(responseObj));
+            }
         }
         else {
             fullPath = staticFolder + filename;
@@ -68,7 +66,7 @@ function onRequest(req, res) {
         function success(data) {
             res.writeHead(200, {
                 'Content-Type': types[extension] || 'text/plain',
-                'Content-Length': data.length
+                'Content-Length': App.bytesLength(data)
             });
             res.end(data);
         };

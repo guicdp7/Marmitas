@@ -1,0 +1,93 @@
+/*Default Styles*/
+html, body{
+    display: block;
+    padding: 0;
+    margin: 0;
+    min-width: 100%;
+    min-height: 100%;
+}
+html{
+    position: relative;
+    background-image: url("../image/fundoingredientes.jpg");
+    background-position: center center;
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+body{
+    position: absolute;
+    font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, .7);
+}
+h1, h2, h3, h4, h5, h6{
+    margin: 0;
+    padding: 0;
+}
+a{
+    text-decoration: none;
+}
+a:hover{
+    text-decoration: underline;
+}
+
+/*modifiers*/
+.bg-black{
+    background-color: black;
+}
+.f-left{
+    float: left;
+}
+.f-right{
+    float: right;
+}
+.p-06{
+    padding: .6rem;
+}
+.p-1{
+    padding: 1rem;
+}
+.p-2{
+    padding: 2rem;
+}
+.p-3{
+    padding: 3rem;
+}
+.p-4{
+    padding: 4rem;
+}
+.p-5{
+    padding: 5rem;
+}
+.t-center{
+    text-align: center;
+}
+.t-white{
+    color: white;
+}
+.w-full{
+    width: 100%;
+}
+.h-full{
+    height: 100%;
+}
+.nav-links{
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+.nav-links li{
+    display: inline-block;
+}
+.nav-links li a{
+    display: block;
+    padding: 1rem;
+    cursor: pointer;
+}
+.nav-links li a:hover{
+    color: black;
+    background-color: white;
+    text-decoration: none;
+}

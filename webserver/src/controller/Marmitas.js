@@ -95,7 +95,11 @@ module.exports = function (end, url, data, method, headers, req, res) {
     }
 
     function getMarmitas(end) {
-        var sql = "SELECT * FROM products";
+        var sql = "SELECT * FROM products p";
+
+        sql += " LEFT JOIN files f ON f.id = p.image_id";
+        sql += " LEFT JOIN products_ingredients pi ON pi.product_id = p.id";
+        sql += " LEFT JOIN ingredients i ON i.id = pi.ingredient_id";
 
         if (id) {
             sql += " WHERE id=" + id;
@@ -104,6 +108,9 @@ module.exports = function (end, url, data, method, headers, req, res) {
         DB.query(sql, function (result) {
             if (!result.error) {
                 marmitasResult = result.result;
+            }
+            else{
+                console.log(result.error);
             }
             end(marmitasResult);
         });

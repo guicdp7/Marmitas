@@ -5,48 +5,30 @@ var con = database(config.host, config.port, config.user, config.password, confi
 
 module.exports = {
     lastInsertId: function (end) {
-        con.connect(function (err){
-            if (err){
-                end({
-                    error: err
-                });
-            }
-            else{
-                con.query("SELECT LAST_INSERT_ID() as id", function (err, result, fields){
-                    if (err){
-                        end({
-                            error: err
-                        });
-                    }
-                    else{
-                        end({
-                            id: result[0].id
-                        })
-                    }
-                });
-            }
-        });
-    },
-    query: function (sql, end) {
-        con.connect(function (err) {
+        con.query("SELECT LAST_INSERT_ID() as id", function (err, result, fields) {
             if (err) {
                 end({
                     error: err
                 });
             }
             else {
-                con.query(sql, function (err, result, fields) {
-                    if (err) {
-                        end({
-                            error: err
-                        });
-                    }
-                    else {
-                        end({
-                            result: result,
-                            fields: fields
-                        });
-                    }
+                end({
+                    id: result[0].id
+                })
+            }
+        });
+    },
+    query: function (sql, end) {
+        con.query(sql, function (err, result, fields) {
+            if (err) {
+                end({
+                    error: err
+                });
+            }
+            else {
+                end({
+                    result: result,
+                    fields: fields
                 });
             }
         });
