@@ -1,0 +1,27 @@
+{
+    "staticFolder": "./static",
+    "apiFolder": "./src/controller",
+    "defaultIndex": "/index.html",
+    "uploadsFolder": "./data_uploads",
+    "adminLogin": {
+        "username": "admin",
+        "password": "123456"
+    },
+    "types": {
+        "htm": "text/html",
+        "html": "text/html",
+        "jpg": "image/jpeg",
+        "jpeg": "image/jpeg",
+        "png": "image/png",
+        "css": "text/css",
+        "js": "text/javascript",
+        "json": "application/json"
+    },
+    "database":{
+        "host": "localhost",
+        "port": "3306",
+        "user": "root",
+        "password": "",
+        "database": "marmitas"
+    }
+}
