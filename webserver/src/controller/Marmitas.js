@@ -1,118 +1,167 @@
-var formidable = require('formidable'),
-    App = require("../App"),
-    DB = require("../model/DB"),
-    Auth = require("../model/Authentication"),
-    fileupload = require("../../fileupload");
+const App = require("../App"),
+    DataBase = require("../model/DataBase"),
+    Authentication = require("../model/Authentication"),
+    FileUpload = require("../model/FileUpload");
 
-module.exports = function (end, url, data, method, headers, req, res) {
-    var id = App.getUrlParameter("id", url),
-        marmitaData = App.getUrlParameter("data", data),
-        auth = App.getUrlParameter("auth", data),
-        marmitasResult = [];
+class Marmitas {
+    constructor(app, end) {
+        /* creating variables */
+        this.app = app;
+        this.db = new DataBase();
+        this.fu = new FileUpload(app.req, "image");
 
-    if (marmitaData) {
-        if (auth) {
-            auth = JSON.parse(auth);
-            Auth(auth.username, auth.password, function (result) {
-                if (result.status) {
-                    marmitaData = JSON.parse(marmitaData);
+        /* post variables */
+        this.id = App.getUrlParameter("id", app.url);
+        this.marmitaData = App.getUrlParameter("data", app.data);
+        this.authData = App.getUrlParameter("auth", app.data);
 
-                    fileupload(req, "image", function (fileResult) {
-                        if (!fileResult.error) {
-                            var sqlFile = "INSERT INTO files (path, name, extension) VALUES ('" + fileResult.path + "', '" + fileResult.name + "', '" + fileResult.extension + "')";
-                            DB.query(sqlFile, function (fileQueryResult) {
-                                if (!fileQueryResult.error) {
-                                    DB.lastInsertId(function (lastResult) {
-                                        if (!lastResult.error) {
-                                            var fileId = lastResult.id;
+        const self = this;
 
-                                            var sql = "INSERT INTO products (name, description, price, quantity, image_id, discount, assigned_to) VALUES(";
-                                            sql += "'" + marmitaData.name + "',";
-                                            sql += "'" + marmitaData.description + "',";
-                                            sql += marmitaData.price + ",";
-                                            sql += marmitaData.quantity + ",";
-                                            sql += fileId + ",";
-                                            sql += marmitaData.discount + ",";
-                                            sql += (result.type == "admin" ? "NULL" : result.user.id);
+        if (self.marmitaData){
+            const returnData = {
+                status: true
+            };
 
-                                            BroadcastChannel.query(sql, function (resultMarmita) {
-                                                if (!resultMarmita.error) {
-                                                    DB.lastInsertId(function (lastResult) {
-                                                        if (!lastResult.error) {
-                                                            marmitasResult["id"] = lastResult.id;
-                                                            marmitasResult["status"] = true;
-                                                        }
-                                                        else {
-                                                            marmitasResult["error"] = resultMarmita.error;
-                                                            marmitasResult["status"] = true;
-                                                        }
-                                                        end(marmitasResult);
-                                                    });
-                                                }
-                                                else {
-                                                    marmitasResult["error"] = resultMarmita.error;
-                                                    marmitasResult["status"] = false;
-                                                    end(marmitasResult);
-                                                }
-                                            });
+            self._checkLogin((loginData) => {
+                if (loginData.status){
+                    self.marmitaData = JSON.parse(self.marmitaData);
+
+                    self.fu.upload((fileData) => {
+                        if (!fileData.error){
+                            self._saveImage(fileData, (fileId) => {
+                                if (!fileId.error){
+                                    self._saveMarmita(loginData, fileId, (marmitaId) => {
+                                        if (!marmitaId.error){
+                                            returnData["id"] = marmitaId;
                                         }
-                                        else {
-                                            marmitasResult["error"] = lastResult.error;
-                                            marmitasResult["status"] = false;
-                                            end(marmitasResult);
+                                        else{
+                                            returnData["error"] = marmitaId.error;
+                                            returnData.status = false;
                                         }
-                                    })
+                                        end(returnData);
+                                    });
                                 }
-                                else {
-                                    marmitasResult["error"] = fileQueryResult.error;
-                                    marmitasResult["status"] = false;
-                                    end(marmitasResult);
+                                else{
+                                    returnData["error"] = fileId.error;
+                                    returnData.status = false;
+                                    end(returnData);
                                 }
                             });
                         }
-                        else {
-                            marmitasResult["error"] = fileResult.error;
-                            marmitasResult["status"] = false;
-                            end(marmitasResult);
+                        else{
+                            returnData["error"] = fileData.error;
+                            returnData.status = false;
+                            end(returnData);
                         }
                     });
                 }
-                else {
-                    marmitasResult["error"] = result.error;
-                    marmitasResult["status"] = false;
-                    end(marmitasResult);
+                else{
+                    returnData["error"] = loginData.error;
+                    returnData.status = false;
+                    end(returnData);
                 }
             });
         }
-        else {
-            returnData["error"] = "no authentication data";
-            marmitasResult["status"] = false;
-            end(marmitasResult);
+        else{
+            self.getMarmitas(end);
         }
     }
-    else {
-        getMarmitas(end);
-    }
+    /* functions */
+    _checkLogin(end){
+        if (this.authData){
+            this.authData = JSON.parse(this.authData);
 
-    function getMarmitas(end) {
-        var sql = "SELECT * FROM products p";
-
-        sql += " LEFT JOIN files f ON f.id = p.image_id";
-        sql += " LEFT JOIN products_ingredients pi ON pi.product_id = p.id";
-        sql += " LEFT JOIN ingredients i ON i.id = pi.ingredient_id";
-
-        if (id) {
-            sql += " WHERE id=" + id;
+            const auth = new Authentication(this.authData.username, this.authData.password);
+            auth.checkLogin(end);
         }
+        else{
+            end({
+                error: "no authentication data"
+            });
+        }
+    }
+    _saveImage(fileData, end){
+        const sql = `
+            INSERT INTO files (path, name, extension) 
+            VALUES ('${fileData.path}', '${fileData.name}', '${fileData.extension}')
+        `;
+        this.db.query(sql, (result) => {
+            if (!result.error){
+                this.db.lastInsertId((last) => {
+                    if (!last.error){
+                        end(last.id);
+                    }
+                    else{
+                        end({
+                            error: last.error
+                        });
+                    }
+                });
+            }
+            else{
+                end({
+                    error: result.error
+                });
+            }
+        });
+    }
+    _saveMarmita(loginData, fileid, end){
+        const self = this;
+        const md = self.marmitaData;
+        const sql = `
+            INSERT INTO products (name, description, price, quantity, image_id, discount, assigned_to)
+            VALUES (
+                '${md.name}',
+                '${md.description}',
+                ${md.price},
+                ${md.quantidy},
+                ${fileid},
+                ${md.discount},
+                ${loginData.type == "admin" ? "NULL" : loginData.user.id}
+            )
+        `;
 
-        DB.query(sql, function (result) {
+        self.db.query(sql, (result) => {
+            if (!result.error){
+                self.db.lastInsertId((last) => {
+                    if (!last.error){
+                        end(last.id);
+                    }
+                    else{
+                        end({
+                            error: last.error
+                        });
+                    }
+                });
+            }
+            else{
+                end({
+                    error: result.error
+                });
+            }
+        });
+    }
+    getMarmitas(end) {
+        let marmitasResult = {};
+        const sql = `
+            SELECT * FROM products p
+            LEFT JOIN files f ON f.id = p.image_id
+            LEFT JOIN products_ingredients pi ON pi.product_id = p.id
+            LEFT JOIN ingredients i ON i.id = pi.ingredient_id
+            ${this.id ?
+                `WHERE id=${this.id}`
+                : ""}
+        `;
+        this.db.query(sql, (result) => {
             if (!result.error) {
                 marmitasResult = result.result;
             }
-            else{
+            else {
                 console.log(result.error);
             }
             end(marmitasResult);
         });
-    };
-};
+    }
+}
+
+module.exports = Marmitas;

@@ -1,6 +1,5 @@
 {
     "staticFolder": "./static",
-    "apiFolder": "./src/controller",
     "defaultIndex": "/index.html",
     "uploadsFolder": "./data_uploads",
     "adminLogin": {

@@ -1,11 +1,20 @@
-var App = require("../App"),
-    Auth = require("../model/Authentication");
+const App = require("../App"),
+    Authentication = require("../model/Authentication");
 
-module.exports = function (end, url, data, method, headers, req, res) {
-    var username = App.getUrlParameter("username", data),
-        password = App.getUrlParameter("password", data);
+class Login{
+    constructor(app, end) {
+        /* creating variables */
+        this.app = app;
 
-    Auth(username, password, function (result){
-        end(result);
-    });
+        /* post variables */
+        this.username = App.getUrlParameter("username", app.data);
+        this.password = App.getUrlParameter("password", app.data);
+        
+        this.auth = new Authentication(this.username, this.password);
+
+        /* check login */
+        this.auth.checkLogin(end);
+    }
 };
+
+module.exports = Login;

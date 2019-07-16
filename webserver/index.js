@@ -1,8 +1,13 @@
-process.title = 'Marmitas';
-var args = process.argv,
-    port = args[2] || 7070,
-    webServer = require('./server');
+process.title = "Marmitas";
 
-webServer.listen(port, function () {
+const args = process.argv,
+    port = args[2] || 7070,
+    App = require("./src/App");
+
+const app = new App(args);
+
+const ws = app.startServer();
+
+ws.listen(port, () => {
     console.log('Server started at port ' + port);
 });
