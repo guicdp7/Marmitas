@@ -14,7 +14,8 @@
         "png": "image/png",
         "css": "text/css",
         "js": "text/javascript",
-        "json": "application/json"
+        "json": "application/json",
+        "gif": "image/gif"
     },
     "database":{
         "host": "localhost",

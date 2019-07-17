@@ -10,18 +10,36 @@
     </head>
     <body>
         <header class="bg-black t-white">
-            <nav>
+            <nav id="navMenu">
                 <a class="f-left t-white" href="/">
                     <h1 class="p-06">Marmitas</h1>
                 </a>
-                <ul id="navLinks" class="nav-links">
-                    <li><a>Login</a></li>
-                    <li><a>Sair</a></li>
-                </ul>
+                <ul id="navLinks" class="nav-links"></ul>
             </nav>
         </header>
         <main>
 
         </main>
+        <!-- modal -->
+        <div id="divLogin" class="modal inactive">
+            <div class="modal-header">
+                <h4>Fazer Login</h4>
+            </div>
+            <div class="modal-body">
+                Entre na sua conta:
+                <form id="formLogin" action="/login" class="form" method="POST">
+                    <input type="text" placeholder="Nome de Usuário" required/>
+                    <input type="password" placeholder="Senha" required/>
+                    <input type="submit" value="Salvar"/>
+                </form>
+            </div>
+        </div>
+        <!-- loader -->
+        <div id="divLoader" class="white">
+            <img src="image/loader.gif" alt="Carregando" title="Carregando" />
+        </div>
+        <script src="script/jquery-3.4.1.min.js"></script>
+        <script src="script/App.js"></script>
+        <script src="script/index.js"></script>
     </body>
 </html>

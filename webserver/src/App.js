@@ -1,13 +1,19 @@
-const http = require('http'),
-    config = require('../config'),
+const config = require('../config'),
     parse = require('url').parse,
     FileHandler = require("./model/FileHandler");
 
 class App {
-    constructor(args) {
+    constructor(req, res) {
         /* creating variables */
-        this.args = args;
         this.data = "?";
+        this.req = req;
+        this.res = res;
+        this.method = req.method;
+        this.headers = req.headers;
+        this.url = req.url;
+        
+        this.req.on("data", this.onData.bind(this));
+        this.req.on("end", this.onEnd.bind(this));
     }
     /* static functions */
     static bytesLength(text) {
@@ -34,14 +40,6 @@ class App {
     static firstLetterUpper(text) {
         return text.charAt(0).toUpperCase() + text.substr(1).toLowerCase();
     }
-    /* functions */
-    startServer() {
-        this.server = http.createServer();
-
-        this.server.on("request", this.onRequest.bind(this));
-
-        return this.server;
-    }
     /* private functions */
     _error(err){
         this.res.writeHead(404);
@@ -57,7 +55,7 @@ class App {
 
         this.res.writeHead(200, {
             'Content-Type': config.types[this.extension] || 'text/plain',
-            'Content-Length': App.bytesLength(data)
+            'Content-Length': stringify ? App.bytesLength(data) : data.length
         });
 
         this.res.end(data);
@@ -74,12 +72,6 @@ class App {
 
         self.fullPath = "./controller" + self.fileName + ".js";
 
-        const classObj = require(self.fullPath);
-
-        const cobj = new classObj(self, (resData) => {
-            responseObj[self.fileName.substr(1).toLowerCase()] = resData;
-            self._success(responseObj, true);
-        });
         try {
             const classObj = require(self.fullPath);
 
@@ -95,16 +87,6 @@ class App {
         }
     }
     /* events */
-    onRequest(req, res) {
-        this.req = req;
-        this.res = res;
-        this.method = req.method;
-        this.headers = req.headers;
-        this.url = req.url;
-
-        this.req.on("data", this.onData.bind(this));
-        this.req.on("end", this.onEnd.bind(this));
-    }
     onData(chunk) {
         this.data += chunk.toString();
     }

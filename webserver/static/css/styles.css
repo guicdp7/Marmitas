@@ -33,6 +33,74 @@ a:hover{
     text-decoration: underline;
 }
 
+/*loader*/
+#divLoader{
+    z-index: 100;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(0, 0, 0, .7);
+}
+#divLoader.white{
+    background-color: white;
+}
+#divLoader.is-loaded{
+    display: none;
+}
+#divLoader img{
+    max-width: 10rem;
+    max-height: 10rem;
+}
+
+/*modal*/
+div.modal{
+    z-index: 50;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, .7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+}
+div.modal.inactive{
+    display: none;
+}
+div.modal .modal-header{
+    max-width: 90%;
+    width: 45rem;
+    padding: 1rem;
+    background-color: black;
+    color: white;
+    font-weight: bold;
+}
+div.modal .modal-body{
+    max-width: 90%;
+    width: 45rem;
+    background-color: white;
+    padding: 1rem;
+}
+
+/*form*/
+.form input{
+    display: block;
+    padding: 0.5rem;
+    margin: 0.5rem 0;
+    width: calc(100% - 1rem);
+}
+.form button, .form input[type="submit"], .form input[type="reset"]{
+    width: auto;
+    padding: 0.5rem 1rem;
+}
+
 /*modifiers*/
 .bg-black{
     background-color: black;
@@ -84,6 +152,7 @@ a:hover{
 .nav-links li a{
     display: block;
     padding: 1rem;
+    color: white;
     cursor: pointer;
 }
 .nav-links li a:hover{
