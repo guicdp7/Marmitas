@@ -24,9 +24,22 @@ class App{
         }
         return false;
     }
+    _setLogin(loginData){
+        sessionStorage.setItem(this.name + "thisUser", JSON.stringify(loginData));
+        this.user = loginData;
+        this._configNavLinks();
+    }
+    _logout(){
+        sessionStorage.removeItem(this.name + "thisUser");
+        this.user = null;
+        this._configNavLinks();
+    }
     _configNavLinks(){
         if (this.user){
             this.navLinks.innerHTML = `
+            <li>
+                <h4> - Olá ${this.user.username}</h4>
+            </li>
             <li>
                 <a id="btNovaMarmita" href="javascript:;">Nova Marmita</a>
             </li>
@@ -36,6 +49,9 @@ class App{
             `;
             this.btNovaMarmita = $("#btNovaMarmita")[0];
             this.btSair = $("#btSair")[0];
+
+            this.btNovaMarmita.addEventListener("click", this.onBtNovaMarmitaClick.bind(this));
+            this.btSair.addEventListener("click", this.onBtSairClick.bind(this));
         }
         else{
             this.navLinks.innerHTML = `
@@ -53,7 +69,7 @@ class App{
         this.divLoader = $("#divLoader")[0];
         this.formLogin = $("#formLogin")[0];
 
-        this.formLogin.addEventListener("submit", this.onFormLoginSubmit);
+        this.formLogin.addEventListener("submit", this.onFormLoginSubmit.bind(this));
 
         /* modals */
         $(".modal").on("click", this.onDivModalClick);
@@ -68,11 +84,57 @@ class App{
         $(this.divLoader).addClass("is-loaded");
         $(this.divLoader).removeClass("white");
     }
+    onBtSairClick(){
+        this._logout();
+    }
     onBtEntrarClick(){
         App.openModal("divLogin");
     }
+    onBtNovaMarmitaClick(){
+        App.openModal("divMarmita");
+    }
     onFormLoginSubmit(e){
         e.preventDefault();
+        const self = this,
+            loginError = (err) => {
+                $(self.formLogin).addClass("invalid");
+                console.log(err);
+            };
+
+        
+        $(self).removeClass("invalid");
+
+        const ajaxOptions = {
+            url: "/login",
+            dataType: "json",
+            type: "POST",
+            contentType: 'application/json',
+            data: {
+                username: self.formLogin.username.value,
+                password: self.formLogin.password.value
+            },
+            processData: true,
+            success: (data, textStatus, jQxhr) => {
+                if (data.status){
+                    const loginResult = data.login;
+                    if (loginResult.status){
+                        self._setLogin(loginResult.user);
+                        App.closeModal("divLogin");
+                    }
+                    else{
+                        loginError(loginResult.error);
+                    }
+                }
+                else{
+                    loginError(data.error);
+                }
+            },
+            error: function(jqXhr, textStatus, errorThrown){
+                loginError(errorThrown);
+            }
+        };
+        
+        $.ajax(ajaxOptions);
     }
     onDivModalClick(e){
         if (e.currentTarget == e.target){

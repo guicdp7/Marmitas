@@ -14,7 +14,7 @@ class Authentication {
         };
         if (this.username && this.password) {
             /* check if is admin */
-            if (this.username == config.username && config.password == config.password) {
+            if (this.username == config.username && this.password == config.password) {
                 returnData["user"] = config;
                 returnData["type"] = "admin";
                 end(returnData);

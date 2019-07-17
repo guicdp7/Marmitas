@@ -90,15 +90,23 @@ div.modal .modal-body{
 }
 
 /*form*/
-.form input{
+.form input, .form textarea{
     display: block;
     padding: 0.5rem;
     margin: 0.5rem 0;
     width: calc(100% - 1rem);
 }
-.form button, .form input[type="submit"], .form input[type="reset"]{
+.form button, .form input[type="submit"], .form input[type="reset"], .form input[type="button"]{
     width: auto;
     padding: 0.5rem 1rem;
+}
+.invalid-feedback{
+    display: none;
+    color: red;
+    font-size: 0.8rem;
+}
+.form.invalid .invalid-feedback{
+    display: block;
 }
 
 /*modifiers*/
@@ -111,8 +119,8 @@ div.modal .modal-body{
 .f-right{
     float: right;
 }
-.p-06{
-    padding: .6rem;
+.p-05{
+    padding: .5rem;
 }
 .p-1{
     padding: 1rem;

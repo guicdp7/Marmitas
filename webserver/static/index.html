@@ -12,7 +12,7 @@
         <header class="bg-black t-white">
             <nav id="navMenu">
                 <a class="f-left t-white" href="/">
-                    <h1 class="p-06">Marmitas</h1>
+                    <h1 class="p-05">Marmitas</h1>
                 </a>
                 <ul id="navLinks" class="nav-links"></ul>
             </nav>
@@ -21,6 +21,29 @@
 
         </main>
         <!-- modal -->
+        <div id="divMarmita" class="modal inactive">
+            <div class="modal-header">
+                <h4>Nova Marmita</h4>
+            </div>
+            <div class="modal-body">
+                Informe os Dados da Marmita:
+                <form id="formMarmita" action="/marmitas" class="form" method="POST">
+                    <input type="file" name="image" placeholder="Foto" required/>
+                    <input type="text" name="name" placeholder="Nome" required/>
+                    <textarea name="description" placeholder="Descrição" rows="4" required></textarea>
+                    <label>Ingredientes:</label>
+                    <div id="divIngredients">
+                        <input type="text" name="ingredients[]" placeholder="Ingrediente 1" required/>
+                        <input type="button" value="+"/>
+                    </div>
+                    <input type="text" name="price" placeholder="Preço R$:" required/>
+                    <input type="number" name="quantity" placeholder="Quantidade" required/>
+                    <input type="text" name="discount" placeholder="Desconto R$:" required/>
+                    <label class="invalid-feedback">Erro ao cadastrar a marmita!</label>
+                    <input type="submit" value="Salvar"/>
+                </form>
+            </div>
+        </div>
         <div id="divLogin" class="modal inactive">
             <div class="modal-header">
                 <h4>Fazer Login</h4>
@@ -28,8 +51,9 @@
             <div class="modal-body">
                 Entre na sua conta:
                 <form id="formLogin" action="/login" class="form" method="POST">
-                    <input type="text" placeholder="Nome de Usuário" required/>
-                    <input type="password" placeholder="Senha" required/>
+                    <input type="text" name="username" placeholder="Nome de Usuário" required/>
+                    <input type="password" name="password" placeholder="Senha" required/>
+                    <label class="invalid-feedback">Usuário ou Senha inválido!</label>
                     <input type="submit" value="Salvar"/>
                 </form>
             </div>
