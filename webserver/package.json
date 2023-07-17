@@ -10,6 +10,6 @@
   "license": "MIT",
   "dependencies": {
     "formidable": "^1.2.1",
-    "mysql": "^2.17.1"
+    "mysql": "^2.18.0"
   }
 }
